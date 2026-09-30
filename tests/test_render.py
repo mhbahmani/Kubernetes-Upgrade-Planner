@@ -44,3 +44,15 @@ def test_render_escapes_html():
          "summary": [{"severity": "ok", "title": "a & b", "text": "<b>"}], "components": [], "matrix": {"rows": []}}
     page = rr.render_html(f)
     assert "<script>x" not in page and "&lt;script&gt;" in page and "a &amp; b" in page
+
+
+def test_support_rows_mark_current_target_and_eol():
+    f = {"meta": {"title": "t", "date": "2026-01-01", "path": ["1.31", "1.32", "1.33"],
+                  "phases": [{"name": "Phase 1", "until": "1.33"}]},
+         "support": [{"minor": "1.31", "isEol": True}, {"minor": "1.32", "isEol": False}, {"minor": "1.33", "isEol": False}],
+         "components": [], "matrix": {"rows": []}}
+    page = rr.render_html(f)
+    assert '<tr class="eol current">' in page and 'class="chip now">current' in page
+    assert 'class="chip tgt">target' in page and '<tr class="">' in page
+    md = rr.render_md(f)
+    assert "**1.31** (current)" in md and "1.33 (target)" in md and "⛔ EOL" in md

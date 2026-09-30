@@ -88,12 +88,22 @@ def html_body(f: dict) -> str:
         section("snapshot", "Cluster snapshot", table(["Item"] + clusters, rows))
 
     if f.get("support"):
-        rows = [[esc(r.get("minor")), esc(r.get("released")), esc(r.get("eol")), esc(r.get("latest")),
-                 chip("blocker") if r.get("isEol") else chip("ok"),
-                 f'<a href="{esc(changelog(r))}">CHANGELOG-{esc(r.get("minor"))}</a>'] for r in f["support"]]
+        current = path[0] if path else None
+        targets = {str(p.get("until")) for p in meta.get("phases") or []}
+        body = []
+        for r in f["support"]:
+            m = str(r.get("minor"))
+            tags = ('<span class="chip now">current</span>' if m == current else "") + \
+                   ('<span class="chip tgt">target</span>' if m in targets else "")
+            cls = " ".join(c for c in ("eol" if r.get("isEol") else "", "current" if m == current else "") if c)
+            cells = [f'<span class="minor">{esc(m)}</span>{tags}', esc(r.get("released")), esc(r.get("eol")),
+                     esc(r.get("latest")), chip("blocker").replace("Blocker", "EOL") if r.get("isEol") else chip("ok").replace("OK", "Supported"),
+                     f'<a href="{esc(changelog(r))}">CHANGELOG-{esc(m)}</a>']
+            body.append(f'<tr class="{cls}">' + "".join(f"<td>{c}</td>" for c in cells) + "</tr>")
+        head = "".join(f"<th>{h}</th>" for h in ["Minor", "Released", "EOL", "Latest patch", "Status", "Release notes"])
         section("support", "Kubernetes support window",
-                table(["Minor", "Released", "EOL", "Latest patch", "Status", "Release notes"], rows),
-                "From endoflife.date. kubeadm and Kubespray upgrade one minor at a time. Read the urgent upgrade notes of every minor on the path.")
+                f'<div class="tbl"><table class="support"><thead><tr>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div>',
+                "From endoflife.date. Red rows are past end of life. kubeadm and Kubespray upgrade one minor at a time; read the urgent upgrade notes of every minor on the path.")
 
     if f.get("nodeLayer"):
         rows = [[f'<span class="name">{esc(r.get("item"))}</span>', esc(r.get("current")), esc(r.get("problem")),
@@ -222,6 +232,13 @@ table.matrix td:has(.gap) { background: var(--block-bg); }
 table.matrix .stepv, table.matrix span.v { font-family: var(--f-mono); font-size: 0.82rem; }
 table.matrix span.gap { color: var(--block); font-weight: 600; font-size: 0.8rem; }
 table.matrix small { color: var(--muted); }
+table.support tr.eol td { background: color-mix(in srgb, var(--block-bg) 75%, transparent); }
+table.support tr.eol td:first-child { box-shadow: inset 3px 0 0 var(--block); }
+table.support tr.current td:first-child .minor { font-weight: 700; color: var(--accent); }
+table.support .minor { font-family: var(--f-mono); margin-right: 8px; }
+table.support .chip { margin-right: 4px; }
+.chip.now { color: var(--accent); background: var(--accent-soft); }
+.chip.tgt { color: var(--ok); background: var(--ok-bg); }
 span.name { font-weight: 600; }
 """
 
@@ -264,7 +281,9 @@ def render_md(f: dict) -> str:
         out += ["## Cluster snapshot", "", md_table(["Item"] + clusters, [[r.get("item")] + [(r.get("values") or {}).get(c, "") for c in clusters] for r in f["snapshot"]]), ""]
     if f.get("support"):
         out += ["## Kubernetes support window", "", md_table(["Minor", "Released", "EOL", "Latest", "Status", "Release notes"],
-                [[r.get("minor"), r.get("released"), r.get("eol"), r.get("latest"), "EOL" if r.get("isEol") else "supported",
+                [[(f'**{r.get("minor")}** (current)' if path and r.get("minor") == path[0] else str(r.get("minor")))
+                  + (" (target)" if str(r.get("minor")) in {str(p.get("until")) for p in meta.get("phases") or []} else ""),
+                  r.get("released"), r.get("eol"), r.get("latest"), "⛔ EOL" if r.get("isEol") else "supported",
                   f'[CHANGELOG-{r.get("minor")}]({changelog(r)})'] for r in f["support"]]), ""]
     if f.get("nodeLayer"):
         out += ["## Node layer", "", md_table(["Item", "Current", "Problem", "Action", "Needed by", "Sources"],

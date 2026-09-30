@@ -1,0 +1,18 @@
+data:
+  ClusterConfiguration: |
+    apiVersion: kubeadm.k8s.io/v1beta4
+    kind: ClusterConfiguration
+    kubernetesVersion: v1.31.4
+    certificatesDir: /etc/kubernetes/ssl
+    apiServer:
+      extraArgs:
+      - name: apiserver-count
+        value: "2"
+    dns:
+      imageTag: v1.11.1
+    etcd:
+      external:
+        endpoints:
+        - https://etcd-1:2379
+        - https://etcd-2:2379
+        - https://etcd-3:2379

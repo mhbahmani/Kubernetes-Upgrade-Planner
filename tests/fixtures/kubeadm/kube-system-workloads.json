@@ -1,0 +1,5 @@
+[
+ {"kind": "DaemonSet", "name": "kube-proxy", "replicas": 4, "ready": 4, "images": ["registry.example.com/k8s/kube-proxy:v1.31.0"]},
+ {"kind": "DaemonSet", "name": "node-local-dns", "replicas": 4, "ready": 4, "images": ["registry.example.com/dns/k8s-dns-node-cache:1.23.1"]},
+ {"kind": "Deployment", "name": "coredns", "replicas": 2, "ready": 2, "images": ["registry.example.com/coredns/coredns:v1.11.3"]}
+]

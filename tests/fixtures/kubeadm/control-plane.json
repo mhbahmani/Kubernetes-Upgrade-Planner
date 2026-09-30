@@ -1,0 +1,6 @@
+[
+ {"name": "kube-apiserver-cp-1", "component": "kube-apiserver", "image": "registry.example.com/k8s/kube-apiserver:v1.31.0", "command": ["kube-apiserver", "--authorization-mode=Node,RBAC", "--service-account-issuer=https://kubernetes.default.svc.cluster.local"]},
+ {"name": "etcd-cp-1", "component": "etcd", "image": "registry.example.com/k8s/etcd:3.5.15-0", "command": ["etcd"]},
+ {"name": "etcd-cp-2", "component": "etcd", "image": "registry.example.com/k8s/etcd:3.5.15-0", "command": ["etcd"]},
+ {"name": "etcd-cp-3", "component": "etcd", "image": "registry.example.com/k8s/etcd:3.5.15-0", "command": ["etcd"]}
+]

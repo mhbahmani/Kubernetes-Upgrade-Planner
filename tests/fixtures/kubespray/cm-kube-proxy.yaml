@@ -1,0 +1,3 @@
+data:
+  config.conf: |
+    mode: ipvs

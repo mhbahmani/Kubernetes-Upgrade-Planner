@@ -1,0 +1,7 @@
+[
+ {"kind": "DaemonSet", "name": "calico-node", "replicas": 3, "ready": 3, "images": ["quay.io/calico/node:v3.29.1"]},
+ {"kind": "DaemonSet", "name": "kube-proxy", "replicas": 3, "ready": 3, "images": ["registry.k8s.io/kube-proxy:v1.31.4"]},
+ {"kind": "DaemonSet", "name": "node-local-dns", "replicas": 3, "ready": 3, "images": ["registry.k8s.io/dns/k8s-dns-node-cache:1.23.1"]},
+ {"kind": "Deployment", "name": "coredns", "replicas": 20, "ready": 20, "images": ["registry.k8s.io/coredns/coredns:v1.11.3"]},
+ {"kind": "Deployment", "name": "dns-autoscaler", "replicas": 0, "ready": 0, "images": ["registry.example.com/kubespray/cpa/cluster-proportional-autoscaler:v1.8.8"]}
+]

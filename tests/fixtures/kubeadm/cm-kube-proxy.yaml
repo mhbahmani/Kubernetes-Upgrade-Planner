@@ -1,0 +1,4 @@
+data:
+  config.conf: |
+    kind: KubeProxyConfiguration
+    mode: ipvs

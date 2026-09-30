@@ -1,0 +1,6 @@
+[
+ {"name": "cp-1", "roles": ["control-plane"], "labels": {}, "kubelet": "v1.31.2", "runtime": "containerd://1.7.24", "os": "Ubuntu 24.04.2 LTS", "kernel": "6.8.0-55-generic", "ready": "True", "unschedulable": false, "taints": ["node-role.kubernetes.io/master=:NoSchedule"]},
+ {"name": "cp-2", "roles": ["control-plane"], "labels": {}, "kubelet": "v1.31.2", "runtime": "containerd://1.7.24", "os": "Ubuntu 24.04.2 LTS", "kernel": "6.8.0-55-generic", "ready": "True", "unschedulable": false, "taints": ["node-role.kubernetes.io/control-plane=:NoSchedule"]},
+ {"name": "cp-3", "roles": ["control-plane"], "labels": {}, "kubelet": "v1.31.2", "runtime": "containerd://1.7.24", "os": "Ubuntu 24.04.2 LTS", "kernel": "6.8.0-55-generic", "ready": "True", "unschedulable": false, "taints": []},
+ {"name": "w-1", "roles": ["worker"], "labels": {}, "kubelet": "v1.31.2", "runtime": "containerd://2.2.1", "os": "Ubuntu 24.04.4 LTS", "kernel": "6.8.0-124-generic", "ready": "False", "unschedulable": true, "taints": []}
+]

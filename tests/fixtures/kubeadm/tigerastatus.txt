@@ -1,0 +1,3 @@
+NAME        AVAILABLE   PROGRESSING   DEGRADED   SINCE
+calico      False       True          False      3d
+ippools     True        False         False      50d

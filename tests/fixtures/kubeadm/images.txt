@@ -1,0 +1,1 @@
+     44 registry.example.com/calico/node:v3.29.1

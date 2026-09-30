@@ -1,0 +1,6 @@
+data:
+  kubelet: |
+    kind: KubeletConfiguration
+    cgroupDriver: systemd
+    clusterDNS:
+    - 10.96.0.10

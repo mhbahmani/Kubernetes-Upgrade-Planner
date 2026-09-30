@@ -1,0 +1,5 @@
+[
+ {"name": "controlplane1", "roles": ["control-plane"], "labels": {}, "kubelet": "v1.31.4", "runtime": "containerd://1.7.24", "os": "Ubuntu 22.04.5 LTS", "kernel": "5.15.0-130-generic", "ready": "True", "taints": []},
+ {"name": "controlplane2", "roles": ["control-plane"], "labels": {}, "kubelet": "v1.31.4", "runtime": "containerd://1.7.24", "os": "Ubuntu 22.04.5 LTS", "kernel": "5.15.0-130-generic", "ready": "True", "taints": []},
+ {"name": "worker01", "roles": ["node"], "labels": {}, "kubelet": "v1.31.4", "runtime": "containerd://1.7.24", "os": "Ubuntu 22.04.5 LTS", "kernel": "5.15.0-130-generic", "ready": "True", "taints": []}
+]

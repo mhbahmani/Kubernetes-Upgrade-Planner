@@ -1,0 +1,122 @@
+# Component catalog: how to recognise a component and how it may be upgraded.
+#
+#   charts:    Helm chart names (ApplicationSet `chart`, helm release chart)
+#   images:    regexes on running image refs; group 1 must capture the version
+#   version:   which version compat.yaml is keyed on: app (default) or chart
+#   rule:      upgrade path the project documents or tests
+#                maxMinorStep: 1   one minor at a time
+#                maxMinorStep: 2   n-2 (e.g. velero)
+#                maxMajorStep: 1   within a major or to the next one (gpu-operator)
+#                any               no documented constraint; read every changelog
+#   fyi:       project id on compatibility.fyi, if it has one
+#   noK8sLimit: true when the project has no upper Kubernetes bound
+#   matrix:    official compatibility page
+components:
+  calico:
+    charts: [tigera-operator]
+    images: ['calico/node:v?([\d.]+)']
+    version: chart
+    rule: {maxMinorStep: 1}
+    fyi: calico
+    matrix: https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements
+  cert-manager:
+    charts: [cert-manager]
+    images: ['cert-manager-controller:v?([\d.]+)']
+    rule: {maxMinorStep: 1}
+    fyi: cert-manager
+    matrix: https://cert-manager.io/docs/releases/
+  ingress-nginx:
+    charts: [ingress-nginx]
+    images: ['ingress-nginx/controller:v?([\d.]+)']
+    rule: any
+    matrix: https://github.com/kubernetes/ingress-nginx#supported-versions-table
+  istio:
+    charts: [istiod, base, istio-base]
+    images: ['istio/pilot:([\d.]+)']
+    rule: {maxMinorStep: 1}
+    fyi: istio
+    matrix: https://istio.io/latest/docs/releases/supported-releases/
+  argocd:
+    charts: [argo-cd]
+    images: ['argoproj/argocd:v?([\d.]+)']
+    rule: {maxMinorStep: 1}
+    fyi: argocd
+    matrix: https://argo-cd.readthedocs.io/en/stable/operator-manual/installation/#tested-versions
+  kyverno:
+    charts: [kyverno]
+    images: ['kyverno/kyverno:v?([\d.]+)']
+    rule: {maxMinorStep: 1}
+    fyi: kyverno
+    matrix: https://kyverno.io/docs/installation/releases/
+  external-secrets:
+    charts: [external-secrets]
+    images: ['external-secrets/external-secrets:v?([\d.]+)']
+    rule: {maxMajorStep: 1}
+    fyi: external-secrets-operator
+    matrix: https://external-secrets.io/latest/introduction/stability-support/
+  velero:
+    charts: [velero]
+    images: ['velero/velero:v?([\d.]+)']
+    rule: {maxMinorStep: 2}
+    matrix: https://github.com/vmware-tanzu/velero#velero-compatibility-matrix
+  kube-state-metrics:
+    charts: [kube-state-metrics]
+    images: ['kube-state-metrics:v?([\d.]+)']
+    rule: any
+    matrix: https://github.com/kubernetes/kube-state-metrics#compatibility-matrix
+  metrics-server:
+    charts: [metrics-server]
+    images: ['metrics-server:v?([\d.]+)']
+    rule: any
+    matrix: https://github.com/kubernetes-sigs/metrics-server#compatibility-matrix
+  gpu-operator:
+    charts: [gpu-operator]
+    images: ['nvidia/gpu-operator:v?([\d.]+)']
+    rule: {maxMajorStep: 1}
+    matrix: https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/platform-support.html
+  topolvm:
+    charts: [topolvm]
+    images: ['topolvm/topolvm:([\d.]+)']
+    rule: {maxMinorStep: 1}
+    matrix: https://github.com/topolvm/topolvm/releases
+  prometheus-operator:
+    charts: [kube-prometheus-stack, prometheus-operator]
+    images: ['prometheus-operator/prometheus-operator:v?([\d.]+)']
+    rule: any
+    fyi: prometheus-operator
+    noK8sLimit: true
+    matrix: https://github.com/prometheus-operator/prometheus-operator#compatibility
+  victoria-metrics-operator:
+    charts: [victoria-metrics-operator]
+    images: ['victoriametrics/operator:v([\d.]+)$']
+    rule: any
+    noK8sLimit: true
+    matrix: https://docs.victoriametrics.com/operator/changelog/
+  argo-rollouts:
+    charts: [argo-rollouts]
+    images: ['argo_rollouts:v?([\d.]+)', 'argoproj/argo-rollouts:v?([\d.]+)']
+    rule: any
+    noK8sLimit: true
+    matrix: https://github.com/argoproj/argo-rollouts/releases
+  tempo:
+    charts: [tempo-distributed, tempo]
+    images: ['grafana/tempo:([\d.]+)']
+    rule: any
+    noK8sLimit: true
+    matrix: https://grafana.com/docs/tempo/latest/release-notes/
+  logging-operator:
+    charts: [logging-operator]
+    images: ['kube-logging/logging-operator:([\d.]+)']
+    rule: any
+    noK8sLimit: true
+    matrix: https://kube-logging.dev/docs/
+  flink-operator:
+    charts: [flink-kubernetes-operator]
+    images: ['flink-kubernetes-operator:([\d.]+)']
+    rule: any
+    noK8sLimit: true
+    matrix: https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-stable/
+  containerd:
+    node: true
+    rule: any
+    matrix: https://github.com/containerd/containerd/blob/main/RELEASES.md

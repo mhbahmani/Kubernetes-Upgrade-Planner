@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: CronJob
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          tolerations:
+            - key: node-role.kubernetes.io/master
+          volumes:
+            - name: src
+              gitRepo:
+                repository: https://example.com/x.git

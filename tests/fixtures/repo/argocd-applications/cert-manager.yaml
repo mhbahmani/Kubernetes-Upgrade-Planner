@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cert-manager
+spec:
+  goTemplate: true
+  generators:
+    - clusters:
+        selector:
+          matchExpressions:
+            - key: cluster
+              operator: In
+              values: [alpha, beta]
+  template:
+    metadata:
+      name: 'cert-manager-{{ .name }}'
+    spec:
+      sources:
+        - repoURL: https://charts.jetstack.io
+          chart: cert-manager
+          targetRevision: "v1.17.4"
+        - repoURL: https://git.example.com/infra.git
+          targetRevision: HEAD
+          ref: repo
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: metrics-server
+spec:
+  generators:
+    - list:
+        elements:
+          - cluster: alpha
+  template:
+    spec:
+      source:
+        repoURL: https://kubernetes-sigs.github.io/metrics-server
+        chart: metrics-server
+        targetRevision: 3.10.0

@@ -1,0 +1,43 @@
+# Kubernetes API group/versions removed per release, and patterns that are
+# deprecated or removed. Source: https://kubernetes.io/docs/reference/using-api/deprecation-guide/
+# plus the release changelogs. Checked 2026-09-30.
+source: https://kubernetes.io/docs/reference/using-api/deprecation-guide/
+removed:
+  extensions/v1beta1: {removedIn: '1.22', replacement: 'apps/v1, networking.k8s.io/v1, policy/v1'}
+  apps/v1beta1: {removedIn: '1.16', replacement: apps/v1}
+  apps/v1beta2: {removedIn: '1.16', replacement: apps/v1}
+  admissionregistration.k8s.io/v1beta1: {removedIn: '1.22', replacement: admissionregistration.k8s.io/v1}
+  apiextensions.k8s.io/v1beta1: {removedIn: '1.22', replacement: apiextensions.k8s.io/v1}
+  apiregistration.k8s.io/v1beta1: {removedIn: '1.22', replacement: apiregistration.k8s.io/v1}
+  authentication.k8s.io/v1beta1: {removedIn: '1.22', replacement: authentication.k8s.io/v1}
+  authorization.k8s.io/v1beta1: {removedIn: '1.22', replacement: authorization.k8s.io/v1}
+  certificates.k8s.io/v1beta1: {removedIn: '1.22', replacement: certificates.k8s.io/v1}
+  coordination.k8s.io/v1beta1: {removedIn: '1.22', replacement: coordination.k8s.io/v1}
+  networking.k8s.io/v1beta1: {removedIn: '1.22', replacement: networking.k8s.io/v1}
+  rbac.authorization.k8s.io/v1beta1: {removedIn: '1.22', replacement: rbac.authorization.k8s.io/v1}
+  scheduling.k8s.io/v1beta1: {removedIn: '1.22', replacement: scheduling.k8s.io/v1}
+  storage.k8s.io/v1beta1: {removedIn: '1.27', replacement: storage.k8s.io/v1}
+  batch/v1beta1: {removedIn: '1.25', replacement: batch/v1}
+  discovery.k8s.io/v1beta1: {removedIn: '1.25', replacement: discovery.k8s.io/v1}
+  events.k8s.io/v1beta1: {removedIn: '1.25', replacement: events.k8s.io/v1}
+  autoscaling/v2beta1: {removedIn: '1.25', replacement: autoscaling/v2}
+  autoscaling/v2beta2: {removedIn: '1.26', replacement: autoscaling/v2}
+  policy/v1beta1: {removedIn: '1.25', replacement: 'policy/v1 (PodDisruptionBudget); PodSecurityPolicy has no replacement (Pod Security Admission)'}
+  node.k8s.io/v1beta1: {removedIn: '1.25', replacement: node.k8s.io/v1}
+  flowcontrol.apiserver.k8s.io/v1beta1: {removedIn: '1.26', replacement: flowcontrol.apiserver.k8s.io/v1}
+  flowcontrol.apiserver.k8s.io/v1beta2: {removedIn: '1.29', replacement: flowcontrol.apiserver.k8s.io/v1}
+  flowcontrol.apiserver.k8s.io/v1beta3: {removedIn: '1.32', replacement: flowcontrol.apiserver.k8s.io/v1}
+  resource.k8s.io/v1alpha3: {removedIn: '1.34', replacement: resource.k8s.io/v1}
+# Regexes matched against file text. `since` is the release that deprecated or
+# removed the behaviour.
+patterns:
+  - {id: endpoints-api, regex: 'kind:\s*Endpoints\b', since: '1.33', severity: recommended, text: 'v1 Endpoints API deprecated in 1.33; use EndpointSlice (discovery.k8s.io/v1)'}
+  - {id: endpoints-rbac, regex: 'resources:[^\n]*\bendpoints\b', since: '1.33', severity: recommended, text: 'RBAC grants endpoints; add endpointslices'}
+  - {id: gitrepo-volume, regex: '^\s*gitRepo:', since: '1.33', severity: blocker, text: 'gitRepo volumes disabled in 1.33 and removed in 1.36'}
+  - {id: external-ips, regex: 'externalIPs:\s*\n\s*-\s*\S', since: '1.36', severity: recommended, text: 'Service externalIPs deprecated in 1.36'}
+  - {id: apparmor-annotation, regex: 'container\.apparmor\.security\.beta\.kubernetes\.io', since: '1.30', severity: recommended, text: 'AppArmor annotations replaced by securityContext.appArmorProfile'}
+  - {id: seccomp-annotation, regex: 'seccomp\.security\.alpha\.kubernetes\.io', since: '1.27', severity: recommended, text: 'seccomp annotations ignored; use securityContext.seccompProfile'}
+  - {id: master-role, regex: 'node-role\.kubernetes\.io/master', since: '1.25', severity: recommended, text: 'kubeadm no longer sets the master label/taint; use node-role.kubernetes.io/control-plane'}
+  - {id: ingress-class-annotation, regex: 'kubernetes\.io/ingress\.class', since: '1.18', severity: recommended, text: 'use spec.ingressClassName'}
+  - {id: pod-infra-flag, regex: 'pod-infra-container-image', since: '1.35', severity: required, text: 'kubelet --pod-infra-container-image removed in 1.35'}
+  - {id: ipvs-mode, regex: '(proxy_mode|kube_proxy_mode|mode)\s*:\s*"?ipvs', since: '1.35', severity: required, text: 'kube-proxy IPVS mode deprecated in 1.35'}

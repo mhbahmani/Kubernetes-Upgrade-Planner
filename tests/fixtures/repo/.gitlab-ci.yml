@@ -1,0 +1,6 @@
+variables:
+  ISTIO_CHART_VERSION: "1.27.3"
+deploy:
+  image: alpine/k8s:1.31.4
+  script:
+    - helm upgrade -i argocd argo/argo-cd --version 9.5.21 -f values.yaml

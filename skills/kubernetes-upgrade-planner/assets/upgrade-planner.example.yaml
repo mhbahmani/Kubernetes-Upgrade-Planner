@@ -1,0 +1,18 @@
+# Optional: put this next to where you run the agent as upgrade-planner.yaml.
+# The skill reads it in step 0 instead of asking for everything.
+targets: ["1.33", "1.36"]          # phase targets, ascending
+strategy: eager                    # lazy | eager (see plan_hops.py --help)
+output: ./k8s-upgrade-plan         # outside any repo you commit
+redact: true                       # redact IPs/hostnames before sharing
+redactDomains: [example.internal]
+clusters:
+  - name: cluster-a                # name used in ApplicationSet cluster selectors
+    context: prod-a                # kube context
+    installer: kubeadm             # optional; detect_install.py finds it
+    nodeInventory: ~/infra/ansible/inventories/cluster-a/hosts.yml
+  - name: cluster-b
+    context: prod-b
+repos:
+  - path: ~/src/gitops             # ArgoCD ApplicationSets, Helm values
+  - path: ~/src/mesh               # Istio charts, Envoy plugins
+  - path: ~/src/iac                # Pulumi / Terraform

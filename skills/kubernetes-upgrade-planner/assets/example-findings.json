@@ -1,0 +1,682 @@
+{
+ "meta": {
+  "title": "Example upgrade plan",
+  "date": "2026-09-30",
+  "clusters": [
+   "cluster-a",
+   "cluster-b"
+  ],
+  "path": [
+   "1.31",
+   "1.32",
+   "1.33",
+   "1.34",
+   "1.35",
+   "1.36"
+  ],
+  "phases": [
+   {
+    "name": "Phase 1",
+    "until": "1.33"
+   },
+   {
+    "name": "Phase 2",
+    "until": "1.36"
+   }
+  ],
+  "facts": [
+   "cluster-a v1.31.0 (kubeadm)",
+   "cluster-b v1.31.4 (kubespray)"
+  ]
+ },
+ "summary": [
+  {
+   "severity": "blocker",
+   "title": "1.33 is already end of life",
+   "text": "Support ended 2026-06-28. Treat it as a stop along the way, not a destination."
+  },
+  {
+   "severity": "blocker",
+   "title": "containerd 1.x on nodes",
+   "text": "Nodes run containerd 1.x, which 1.36 does not support."
+  },
+  {
+   "severity": "required",
+   "title": "cluster-a: nodes not ready",
+   "text": "cluster-a-worker-gpu-03 must be fixed or removed before upgrading."
+  }
+ ],
+ "snapshot": [
+  {
+   "item": "Installer",
+   "values": {
+    "cluster-a": "kubeadm (kubeadm-config ConfigMap present)",
+    "cluster-b": "kubespray (certificatesDir /etc/kubernetes/ssl (kubeadm default is /etc/kubernetes/pki); dns-autoscaler Deployment)"
+   }
+  },
+  {
+   "item": "API server",
+   "values": {
+    "cluster-a": "v1.31.0",
+    "cluster-b": "v1.31.4"
+   }
+  },
+  {
+   "item": "Kubelets",
+   "values": {
+    "cluster-a": "v1.31.2 \u00d744",
+    "cluster-b": "v1.31.4 \u00d774"
+   }
+  },
+  {
+   "item": "Control-plane nodes",
+   "values": {
+    "cluster-a": 5,
+    "cluster-b": 6
+   }
+  },
+  {
+   "item": "etcd",
+   "values": {
+    "cluster-a": "stacked \u00d75 3.5.15-0",
+    "cluster-b": "external \u00d73"
+   }
+  },
+  {
+   "item": "containerd",
+   "values": {
+    "cluster-a": "containerd://1.7.24 \u00d75, containerd://1.7.27 \u00d720, containerd://1.7.28 \u00d72, containerd://2.2.1 \u00d717",
+    "cluster-b": "containerd://1.7.24 \u00d774"
+   }
+  },
+  {
+   "item": "OS",
+   "values": {
+    "cluster-a": "Ubuntu 24.04.2 LTS \u00d77, Ubuntu 24.04.3 LTS \u00d72, Ubuntu 24.04.4 LTS \u00d717, Ubuntu 24.04.5 LTS \u00d718",
+    "cluster-b": "Ubuntu 22.04.3 LTS \u00d75, Ubuntu 22.04.4 LTS \u00d74, Ubuntu 22.04.5 LTS \u00d765"
+   }
+  },
+  {
+   "item": "Kernel",
+   "values": {
+    "cluster-a": "6.8.0-124-generic \u00d710, 6.8.0-136-generic \u00d77, 6.8.0-139-generic \u00d71, 6.8.0-142-generic \u00d717, 6.8.0-55-generic \u00d75, 6.8.0-64-generic \u00d73, 6.8.0-88-generic \u00d71",
+    "cluster-b": "5.15.0-105-generic \u00d71, 5.15.0-118-generic \u00d71, 5.15.0-119-generic \u00d75, 5.15.0-121-generic \u00d71, 5.15.0-130-generic \u00d756, 5.15.0-131-generic \u00d71, 5.15.0-163-generic \u00d73, 5.15.0-171-generic \u00d72, 5.15.0-185-generic \u00d72, 5.15.0-78-generic \u00d71, 5.15.0-92-generic \u00d71"
+   }
+  },
+  {
+   "item": "kube-proxy",
+   "values": {
+    "cluster-a": "ipvs \u00b7 v1.31.0",
+    "cluster-b": "ipvs \u00b7 v1.31.4"
+   }
+  },
+  {
+   "item": "CNI",
+   "values": {
+    "cluster-a": "calico tigera-operator v3.29.1",
+    "cluster-b": "calico manifest v3.29.1"
+   }
+  },
+  {
+   "item": "CoreDNS",
+   "values": {
+    "cluster-a": "v1.11.3 \u00b7 2 replicas",
+    "cluster-b": "v1.11.3 \u00b7 20 replicas"
+   }
+  },
+  {
+   "item": "NodeLocal DNS",
+   "values": {
+    "cluster-a": "node-local-dns",
+    "cluster-b": "node-local-dns, node-local-dns-controlplane"
+   }
+  },
+  {
+   "item": "Nodes not ready",
+   "values": {
+    "cluster-a": "cluster-a-worker-gpu-03",
+    "cluster-b": "none"
+   }
+  }
+ ],
+ "support": [
+  {
+   "minor": "1.31",
+   "released": "2024-08-13",
+   "eol": "2025-11-11",
+   "latest": "1.31.14",
+   "isEol": true
+  },
+  {
+   "minor": "1.32",
+   "released": "2024-12-11",
+   "eol": "2026-02-28",
+   "latest": "1.32.13",
+   "isEol": true
+  },
+  {
+   "minor": "1.33",
+   "released": "2025-04-23",
+   "eol": "2026-06-28",
+   "latest": "1.33.13",
+   "isEol": true
+  },
+  {
+   "minor": "1.34",
+   "released": "2025-08-27",
+   "eol": "2026-10-27",
+   "latest": "1.34.12",
+   "isEol": false
+  },
+  {
+   "minor": "1.35",
+   "released": "2025-12-17",
+   "eol": "2027-02-28",
+   "latest": "1.35.9",
+   "isEol": false
+  },
+  {
+   "minor": "1.36",
+   "released": "2026-04-22",
+   "eol": "2027-06-28",
+   "latest": "1.36.5",
+   "isEol": false
+  }
+ ],
+ "nodeLayer": [
+  {
+   "item": "containerd",
+   "severity": "blocker",
+   "neededBy": "before 1.36",
+   "current": "cluster-a: containerd://1.7.24 \u00d75, containerd://1.7.27 \u00d720, containerd://1.7.28 \u00d72, containerd://2.2.1 \u00d717; cluster-b: containerd://1.7.24 \u00d774",
+   "problem": "Kubernetes 1.36 does not support containerd 1.x; 1.35 is the last release that does.",
+   "action": "Hold the package, then move nodes to containerd 2.x (config version 3, certs.d mirrors, new sandbox image key) at the 1.34 or 1.35 stage.",
+   "refs": [
+    {
+     "title": "containerd releases and Kubernetes support",
+     "url": "https://github.com/containerd/containerd/blob/main/RELEASES.md"
+    }
+   ]
+  },
+  {
+   "item": "kube-proxy IPVS",
+   "severity": "required",
+   "neededBy": "before 1.37",
+   "current": "ipvs on cluster-a, cluster-b",
+   "problem": "IPVS mode is deprecated in 1.35 and being removed.",
+   "action": "Move to iptables (or nftables with kernel 5.13+). Re-test NodeLocal DNS, which is set up differently per mode.",
+   "refs": [
+    {
+     "title": "kube-proxy modes",
+     "url": "https://kubernetes.io/docs/reference/networking/virtual-ips/"
+    }
+   ]
+  },
+  {
+   "item": "etcd (cluster-a, stacked)",
+   "severity": "recommended",
+   "neededBy": "1.34 hop",
+   "current": "stacked \u00d75 3.5.15-0",
+   "problem": "kubeadm 1.34 moves stacked etcd to 3.6, with no downgrade.",
+   "action": "Take an etcd snapshot and back up /etc/kubernetes before the 1.34 hop.",
+   "refs": [
+    {
+     "title": "etcd 3.6 upgrade",
+     "url": "https://etcd.io/docs/v3.6/upgrades/upgrade_3_6/"
+    }
+   ]
+  },
+  {
+   "item": "kubelet config (cluster-a)",
+   "severity": "required",
+   "neededBy": "every hop",
+   "current": "kube-system/kubelet-config ConfigMap",
+   "problem": "kubeadm upgrade node rewrites /var/lib/kubelet/config.yaml from the ConfigMap, dropping per-node settings applied after join.",
+   "action": "Compare a node's config.yaml with the ConfigMap; put custom settings into the ConfigMap or re-apply them after each hop.",
+   "refs": [
+    {
+     "title": "Reconfiguring a kubeadm cluster",
+     "url": "https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-reconfigure/"
+    }
+   ]
+  }
+ ],
+ "components": [
+  {
+   "id": "calico",
+   "name": "calico",
+   "severity": "required",
+   "current": {
+    "cluster-a": "3.29.1",
+    "cluster-b": "3.29.1"
+   },
+   "targets": {
+    "Phase 1": "3.30",
+    "Phase 2": "3.32"
+   },
+   "notes": "1.31: eager: wider support available; 1.34: eager: wider support available",
+   "refs": [
+    {
+     "title": "calico compatibility",
+     "url": "https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements"
+    }
+   ]
+  },
+  {
+   "id": "cert-manager",
+   "name": "cert-manager",
+   "severity": "required",
+   "current": {
+    "cluster-a": "1.17.4",
+    "cluster-b": "1.17.4"
+   },
+   "targets": {
+    "Phase 1": "1.21",
+    "Phase 2": "1.21"
+   },
+   "notes": "1.31: eager: wider support available; 1.33: eager: wider support available",
+   "refs": [
+    {
+     "title": "cert-manager compatibility",
+     "url": "https://cert-manager.io/docs/releases/"
+    }
+   ]
+  },
+  {
+   "id": "ingress-nginx",
+   "name": "ingress-nginx",
+   "severity": "blocker",
+   "current": {
+    "cluster-a": "1.12.1",
+    "cluster-b": "1.12.1"
+   },
+   "targets": {
+    "Phase 1": "1.15",
+    "Phase 2": "1.15"
+   },
+   "notes": "no known ingress-nginx version supports both 1.35 and 1.36; 1.31: eager: wider support available; Project archived 2026-03-24; no release supports 1.36.",
+   "refs": [
+    {
+     "title": "ingress-nginx compatibility",
+     "url": "https://github.com/kubernetes/ingress-nginx#supported-versions-table"
+    }
+   ]
+  },
+  {
+   "id": "istio",
+   "name": "istio",
+   "severity": "required",
+   "current": {
+    "cluster-a": "1.27.3",
+    "cluster-b": "1.27.3"
+   },
+   "targets": {
+    "Phase 1": "1.30",
+    "Phase 2": "1.30"
+   },
+   "notes": "1.31: eager: wider support available; 1.32: eager: wider support available",
+   "refs": [
+    {
+     "title": "istio compatibility",
+     "url": "https://istio.io/latest/docs/releases/supported-releases/"
+    }
+   ]
+  },
+  {
+   "id": "metrics-server",
+   "name": "metrics-server",
+   "severity": "ok",
+   "current": {
+    "cluster-a": "0.7.2",
+    "cluster-b": "0.7.2"
+   },
+   "targets": {
+    "Phase 1": "0.7",
+    "Phase 2": "0.7"
+   },
+   "notes": "",
+   "refs": [
+    {
+     "title": "metrics-server compatibility",
+     "url": "https://github.com/kubernetes-sigs/metrics-server#compatibility-matrix"
+    }
+   ]
+  },
+  {
+   "id": "velero",
+   "name": "velero",
+   "severity": "blocker",
+   "current": {
+    "cluster-a": "1.11.0",
+    "cluster-b": "1.11.0"
+   },
+   "targets": {
+    "Phase 1": "1.18",
+    "Phase 2": "1.18"
+   },
+   "notes": "no known velero version supports both 1.35 and 1.36; 1.31: 1.11 does not support 1.32; 1.33: eager: wider support available; Ranges are the tested versions; expected compatibility is wider.",
+   "refs": [
+    {
+     "title": "velero compatibility",
+     "url": "https://github.com/vmware-tanzu/velero#velero-compatibility-matrix"
+    }
+   ]
+  }
+ ],
+ "matrix": {
+  "hops": [
+   "1.31",
+   "1.32",
+   "1.33",
+   "1.34",
+   "1.35",
+   "1.36"
+  ],
+  "rows": [
+   {
+    "component": "calico",
+    "clusters": [
+     "cluster-a",
+     "cluster-b"
+    ],
+    "current": "3.29.1",
+    "status": "upgrade",
+    "steps": {
+     "1.31": "3.29 \u2192 3.30",
+     "1.34": "3.30 \u2192 3.31 \u2192 3.32"
+    },
+    "final": "3.32",
+    "newestForFinal": null,
+    "rule": {
+     "maxMinorStep": 1
+    },
+    "refs": [
+     {
+      "title": "calico compatibility",
+      "url": "https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements"
+     }
+    ],
+    "id": "calico"
+   },
+   {
+    "component": "cert-manager",
+    "clusters": [
+     "cluster-a",
+     "cluster-b"
+    ],
+    "current": "1.17.4",
+    "status": "upgrade",
+    "steps": {
+     "1.31": "1.17 \u2192 1.18 \u2192 1.19",
+     "1.33": "1.19 \u2192 1.20 \u2192 1.21"
+    },
+    "final": "1.21",
+    "newestForFinal": null,
+    "rule": {
+     "maxMinorStep": 1
+    },
+    "refs": [
+     {
+      "title": "cert-manager compatibility",
+      "url": "https://cert-manager.io/docs/releases/"
+     }
+    ],
+    "id": "cert-manager"
+   },
+   {
+    "component": "ingress-nginx",
+    "clusters": [
+     "cluster-a",
+     "cluster-b"
+    ],
+    "current": "1.12.1",
+    "status": "blocked",
+    "steps": {
+     "1.31": "1.12 \u2192 1.15",
+     "1.35": "GAP: no known ingress-nginx version supports both 1.35 and 1.36"
+    },
+    "final": "1.15",
+    "newestForFinal": null,
+    "rule": "any",
+    "refs": [
+     {
+      "title": "ingress-nginx compatibility",
+      "url": "https://github.com/kubernetes/ingress-nginx#supported-versions-table"
+     }
+    ],
+    "id": "ingress-nginx"
+   },
+   {
+    "component": "istio",
+    "clusters": [
+     "cluster-a",
+     "cluster-b"
+    ],
+    "current": "1.27.3",
+    "status": "upgrade",
+    "steps": {
+     "1.31": "1.27 \u2192 1.28 \u2192 1.29",
+     "1.32": "1.29 \u2192 1.30"
+    },
+    "final": "1.30",
+    "newestForFinal": "1.31",
+    "rule": {
+     "maxMinorStep": 1
+    },
+    "refs": [
+     {
+      "title": "istio compatibility",
+      "url": "https://istio.io/latest/docs/releases/supported-releases/"
+     }
+    ],
+    "id": "istio"
+   },
+   {
+    "component": "velero",
+    "clusters": [
+     "cluster-a",
+     "cluster-b"
+    ],
+    "current": "1.11.0",
+    "status": "blocked",
+    "steps": {
+     "1.31": "1.11 \u2192 1.13 \u2192 1.15 \u2192 1.17",
+     "1.33": "1.17 \u2192 1.18",
+     "1.35": "GAP: no known velero version supports both 1.35 and 1.36"
+    },
+    "final": "1.18",
+    "newestForFinal": null,
+    "rule": {
+     "maxMinorStep": 2
+    },
+    "refs": [
+     {
+      "title": "velero compatibility",
+      "url": "https://github.com/vmware-tanzu/velero#velero-compatibility-matrix"
+     }
+    ],
+    "id": "velero"
+   }
+  ]
+ },
+ "releaseNotes": [
+  {
+   "minor": "1.35",
+   "src": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md",
+   "hot": [
+    "kubelet refuses cgroup v1 by default (failCgroupV1: true)",
+    "kube-proxy IPVS mode deprecated"
+   ],
+   "items": [
+    "kubelet --pod-infra-container-image removed"
+   ]
+  }
+ ],
+ "sequence": [
+  {
+   "title": "On 1.31, before the hop to 1.32",
+   "items": [
+    "calico (cluster-a): 3.29 \u2192 3.30 (possible from 1.31)",
+    "calico (cluster-b): 3.29 \u2192 3.30 (possible from 1.31)",
+    "cert-manager (cluster-a): 1.17 \u2192 1.18 \u2192 1.19 (possible from 1.31)",
+    "cert-manager (cluster-b): 1.17 \u2192 1.18 \u2192 1.19 (possible from 1.31)",
+    "external-secrets (cluster-a): 0.18 \u2192 1.3 \u2192 2.8 (possible from 1.31)",
+    "external-secrets (cluster-b): 0.18 \u2192 1.3 \u2192 2.8 (possible from 1.31)",
+    "gpu-operator (cluster-a): 25.3 \u2192 25.10 (possible from 1.31)",
+    "gpu-operator (cluster-b): 25.3 \u2192 25.10 (possible from 1.31)",
+    "ingress-nginx (cluster-a): 1.12 \u2192 1.15 (possible from 1.31)",
+    "ingress-nginx (cluster-b): 1.12 \u2192 1.15 (possible from 1.31)",
+    "istio (cluster-a): 1.27 \u2192 1.28 \u2192 1.29 (possible from 1.31)",
+    "istio (cluster-b): 1.27 \u2192 1.28 \u2192 1.29 (possible from 1.31)",
+    "kube-state-metrics (cluster-a): 2.16 \u2192 2.20 (possible from 1.31)",
+    "kube-state-metrics (cluster-b): 2.16 \u2192 2.20 (possible from 1.31)",
+    "kyverno (cluster-a): 1.15 \u2192 1.16 (possible from 1.31)",
+    "kyverno (cluster-b): 1.15 \u2192 1.16 (possible from 1.31)",
+    "topolvm (cluster-a): 0.36 \u2192 0.38 \u2192 0.39 \u2192 0.41 (possible from 1.31)",
+    "velero (cluster-a): 1.11 \u2192 1.13 \u2192 1.15 \u2192 1.17 (possible from 1.31)",
+    "velero (cluster-b): 1.11 \u2192 1.13 \u2192 1.15 \u2192 1.17 (possible from 1.31)",
+    "Hop: upgrade the control plane and nodes to 1.32"
+   ]
+  },
+  {
+   "title": "On 1.32, before the hop to 1.33",
+   "items": [
+    "gpu-operator (cluster-a): 25.10 \u2192 26.3 (possible from 1.32)",
+    "gpu-operator (cluster-b): 25.10 \u2192 26.3 (possible from 1.32)",
+    "istio (cluster-a): 1.29 \u2192 1.30 (possible from 1.32)",
+    "istio (cluster-b): 1.29 \u2192 1.30 (possible from 1.32)",
+    "kyverno (cluster-a): 1.16 \u2192 1.17 \u2192 1.18 (possible from 1.32)",
+    "kyverno (cluster-b): 1.16 \u2192 1.17 \u2192 1.18 (possible from 1.32)",
+    "Hop: upgrade the control plane and nodes to 1.33"
+   ]
+  },
+  {
+   "title": "On 1.33, before the hop to 1.34",
+   "items": [
+    "argocd (cluster-a): 3.4 \u2192 3.5 (possible from 1.33)",
+    "argocd (cluster-b): 3.4 \u2192 3.5 (possible from 1.33)",
+    "cert-manager (cluster-a): 1.19 \u2192 1.20 \u2192 1.21 (possible from 1.33)",
+    "cert-manager (cluster-b): 1.19 \u2192 1.20 \u2192 1.21 (possible from 1.33)",
+    "gpu-operator (cluster-a): 26.3 \u2192 26.7 (possible from 1.33)",
+    "gpu-operator (cluster-b): 26.3 \u2192 26.7 (possible from 1.33)",
+    "velero (cluster-a): 1.17 \u2192 1.18 (possible from 1.33)",
+    "velero (cluster-b): 1.17 \u2192 1.18 (possible from 1.33)",
+    "Hop: upgrade the control plane and nodes to 1.34"
+   ]
+  }
+ ],
+ "verify": [
+  "cluster-a: containerd versions differ across nodes (containerd://1.7.24, containerd://1.7.27, containerd://1.7.28, containerd://2.2.1); compare config.toml between them.",
+  "cgroup version on every node (run node_facts.sh); kubelet 1.35 refuses cgroup v1.",
+  "cluster-b: the Kubespray version and inventory last used, and who runs it.",
+  "cluster-b: etcd version: external etcd, check on the etcd hosts (etcdctl version)"
+ ],
+ "references": [
+  {
+   "group": "Kubernetes",
+   "items": [
+    {
+     "title": "endoflife.date Kubernetes",
+     "url": "https://endoflife.date/kubernetes"
+    },
+    {
+     "title": "Version skew policy",
+     "url": "https://kubernetes.io/releases/version-skew-policy/"
+    },
+    {
+     "title": "Upgrading kubeadm clusters",
+     "url": "https://kubernetes.io/docs/tasks/administer-cluster/kubeadm/kubeadm-upgrade/"
+    },
+    {
+     "title": "Deprecated API migration guide",
+     "url": "https://kubernetes.io/docs/reference/using-api/deprecation-guide/"
+    },
+    {
+     "title": "containerd releases and Kubernetes support",
+     "url": "https://github.com/containerd/containerd/blob/main/RELEASES.md"
+    },
+    {
+     "title": "About cgroup v2",
+     "url": "https://kubernetes.io/docs/concepts/architecture/cgroups/"
+    }
+   ]
+  },
+  {
+   "group": "Components",
+   "items": [
+    {
+     "title": "argo-rollouts compatibility",
+     "url": "https://github.com/argoproj/argo-rollouts/releases"
+    },
+    {
+     "title": "argocd compatibility",
+     "url": "https://argo-cd.readthedocs.io/en/stable/operator-manual/installation/#tested-versions"
+    },
+    {
+     "title": "calico compatibility",
+     "url": "https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements"
+    },
+    {
+     "title": "cert-manager compatibility",
+     "url": "https://cert-manager.io/docs/releases/"
+    },
+    {
+     "title": "external-secrets compatibility",
+     "url": "https://external-secrets.io/latest/introduction/stability-support/"
+    },
+    {
+     "title": "flink-operator compatibility",
+     "url": "https://nightlies.apache.org/flink/flink-kubernetes-operator-docs-stable/"
+    },
+    {
+     "title": "gpu-operator compatibility",
+     "url": "https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/platform-support.html"
+    },
+    {
+     "title": "ingress-nginx compatibility",
+     "url": "https://github.com/kubernetes/ingress-nginx#supported-versions-table"
+    },
+    {
+     "title": "istio compatibility",
+     "url": "https://istio.io/latest/docs/releases/supported-releases/"
+    },
+    {
+     "title": "kube-state-metrics compatibility",
+     "url": "https://github.com/kubernetes/kube-state-metrics#compatibility-matrix"
+    },
+    {
+     "title": "kyverno compatibility",
+     "url": "https://kyverno.io/docs/installation/releases/"
+    },
+    {
+     "title": "logging-operator compatibility",
+     "url": "https://kube-logging.dev/docs/"
+    },
+    {
+     "title": "metrics-server compatibility",
+     "url": "https://github.com/kubernetes-sigs/metrics-server#compatibility-matrix"
+    },
+    {
+     "title": "prometheus-operator compatibility",
+     "url": "https://github.com/prometheus-operator/prometheus-operator#compatibility"
+    },
+    {
+     "title": "tempo compatibility",
+     "url": "https://grafana.com/docs/tempo/latest/release-notes/"
+    },
+    {
+     "title": "topolvm compatibility",
+     "url": "https://github.com/topolvm/topolvm/releases"
+    },
+    {
+     "title": "velero compatibility",
+     "url": "https://github.com/vmware-tanzu/velero#velero-compatibility-matrix"
+    },
+    {
+     "title": "victoria-metrics-operator compatibility",
+     "url": "https://docs.victoriametrics.com/operator/changelog/"
+    }
+   ]
+  }
+ ]
+}

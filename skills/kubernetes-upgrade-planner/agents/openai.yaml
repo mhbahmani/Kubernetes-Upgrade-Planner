@@ -1,0 +1,5 @@
+interface:
+  display_name: Kubernetes upgrade planner
+  short_description: Plan multi-hop Kubernetes upgrades with bridge versions per component
+  default_prompt: Plan the upgrade of my Kubernetes clusters to the next supported version and list what must be upgraded first.
+allow_implicit_invocation: true

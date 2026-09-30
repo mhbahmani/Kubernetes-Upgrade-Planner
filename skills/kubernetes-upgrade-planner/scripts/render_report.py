@@ -89,9 +89,11 @@ def html_body(f: dict) -> str:
 
     if f.get("support"):
         rows = [[esc(r.get("minor")), esc(r.get("released")), esc(r.get("eol")), esc(r.get("latest")),
-                 chip("blocker") if r.get("isEol") else chip("ok")] for r in f["support"]]
-        section("support", "Kubernetes support window", table(["Minor", "Released", "EOL", "Latest patch", "Status"], rows),
-                "From endoflife.date. kubeadm and Kubespray upgrade one minor at a time.")
+                 chip("blocker") if r.get("isEol") else chip("ok"),
+                 f'<a href="{esc(changelog(r))}">CHANGELOG-{esc(r.get("minor"))}</a>'] for r in f["support"]]
+        section("support", "Kubernetes support window",
+                table(["Minor", "Released", "EOL", "Latest patch", "Status", "Release notes"], rows),
+                "From endoflife.date. kubeadm and Kubespray upgrade one minor at a time. Read the urgent upgrade notes of every minor on the path.")
 
     if f.get("nodeLayer"):
         rows = [[f'<span class="name">{esc(r.get("item"))}</span>', esc(r.get("current")), esc(r.get("problem")),
@@ -109,34 +111,29 @@ def html_body(f: dict) -> str:
         section("components", "Components", table(["Component"] + clusters + phases + ["Priority", "Why"], rows))
 
     matrix = f.get("matrix") or {}
-    if matrix.get("rows"):
-        hops_m = matrix.get("hops") or path
-        rows = []
-        for r in matrix["rows"]:
-            cells = []
-            for h in hops_m:
-                text = (r.get("steps") or {}).get(h, "")
-                cls = "gap" if str(text).startswith("GAP") else ("step" if text else "")
-                cells.append(f'<span class="{cls}">{esc(text)}</span>' if text else "")
-            label = esc(r.get("component")) + (f'<br><small>{esc(", ".join(r.get("clusters") or []))}</small>' if r.get("clusters") else "")
-            rows.append([f'<span class="name">{label}</span>', esc(r.get("current"))] + cells
-                        + [esc(r.get("final") or r.get("status")), esc(_rule(r.get("rule"))) + refs_html(r.get("refs"))])
-        section("path", "Versions at each hop", table(["Component", "Now"] + [f"On {h}" for h in hops_m] + ["Final", "Rule"], rows, "matrix"),
-                "Each step must be done while the cluster is on the minor shown, before the next hop. Every version stays inside its supported range on both sides of every hop.")
-
-    if f.get("releaseNotes"):
-        cards = "".join(
-            f'<article><div class="relhead"><h3>{esc(r.get("minor"))}</h3>'
-            f'<a class="src" href="{esc(r.get("src"))}">changelog</a></div><ul>'
-            + "".join(f'<li class="hot">{esc(i)}</li>' for i in r.get("hot") or [])
-            + "".join(f"<li>{esc(i)}</li>" for i in r.get("items") or []) + "</ul></article>"
-            for r in f["releaseNotes"])
-        section("k8s", "Release notes that affect these clusters", f'<div class="rel">{cards}</div>')
-
-    if f.get("sequence"):
-        items = "".join(f'<li><b>{esc(s.get("title"))}</b><ul>' + "".join(f"<li>{esc(i)}</li>" for i in s.get("items") or [])
-                        + "</ul></li>" for s in f["sequence"])
-        section("sequence", "Upgrade sequence", f'<ol class="steps">{items}</ol>')
+    if matrix.get("rows") or f.get("sequence"):
+        inner = ""
+        if matrix.get("rows"):
+            hops_m = matrix.get("hops") or path
+            stages, last = hops_m[:-1], hops_m[-1]
+            head = [f"On {h} (before hop to {n})" if i == 0 else f"On {h}"
+                    for i, (h, n) in enumerate(zip(stages, hops_m[1:]))]
+            rows = []
+            for r in matrix["rows"]:
+                label = esc(r.get("component"))
+                if r.get("clusters"):
+                    label += f'<br><small>{esc(", ".join(r["clusters"]))}</small>'
+                cells = [pipeline_cell((r.get("cells") or {}).get(h), (r.get("steps") or {}).get(h)) for h in stages]
+                why = esc(r.get("why") or _rule(r.get("rule"))) + refs_html(r.get("refs"))
+                rows.append([f'<span class="name">{label}</span>'] + cells
+                            + [f'<span class="v">{esc(r.get("final") or r.get("status"))}</span>', why])
+            inner += table(["Component"] + head + [last, "Why, and upgrade-path rule"], rows, "matrix")
+        if f.get("sequence"):
+            inner += "<h3>Before and between hops</h3>" + '<ol class="steps">' + "".join(
+                f'<li><b>{esc(s_.get("title"))}</b><ul>' + "".join(f"<li>{esc(i)}</li>" for i in s_.get("items") or [])
+                + "</ul></li>" for s_ in f["sequence"]) + "</ol>"
+        section("sequence", "Upgrade sequence", inner,
+                "Read each row left to right. A shaded cell is a step to finish while the cluster is on that minor, before the next hop; the bold version is where the step ends. Every version stays inside its supported range on both sides of every hop.")
 
     if f.get("verify"):
         section("verify", "Still to verify", '<ul class="reflist">' + "".join(f"<li>{esc(v)}</li>" for v in f["verify"]) + "</ul>")
@@ -156,6 +153,35 @@ def html_body(f: dict) -> str:
             + f'<nav class="toc" aria-label="Sections">{nav}</nav></header>')
     foot = f'<footer>{esc(meta.get("footer", "Generated by the kubernetes-upgrade-planner skill from read-only data."))}</footer>'
     return f'<div class="wrap">{head}{"".join(out)}{foot}</div>'
+
+
+def changelog(row: dict) -> str:
+    return row.get("changelog") or f'https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-{row.get("minor")}.md'
+
+
+def pipeline_cell(cell: dict | None, text: str | None) -> str:
+    """One stage of a pipeline row: '3.29 → 3.30 → **3.31**' or '→ **3.32**'."""
+    if not cell and not text:
+        return ""
+    if cell and "gap" in cell or (text and str(text).startswith("GAP")):
+        msg = cell["gap"] if cell and "gap" in cell else str(text)[5:]
+        return f'<span class="gap" title="{esc(msg)}">no supported version</span><br><small>{esc(msg)}</small>'
+    if not cell:  # hand-written findings may only have text
+        return f'<span class="stepv">{esc(text)}</span>'
+    chain = ([cell["from"]] if cell.get("first") else [""]) + cell.get("via", [])
+    body = " → ".join(esc(v) for v in chain).lstrip() + f' → <b>{esc(cell["to"])}</b>'
+    return f'<span class="stepv">{body.strip()}</span>'
+
+
+def pipeline_md(cell: dict | None, text: str | None) -> str:
+    if not cell and not text:
+        return ""
+    if cell and "gap" in cell:
+        return "⛔ " + cell["gap"]
+    if not cell:
+        return str(text)
+    chain = ([cell["from"]] if cell.get("first") else [""]) + cell.get("via", [])
+    return (" → ".join(chain) + f' → **{cell["to"]}**').strip()
 
 
 def _phase(meta: dict, minor: str) -> int:
@@ -190,10 +216,12 @@ def _rule(rule) -> str:
 
 
 EXTRA_CSS = """
-table.matrix td { white-space: normal; min-width: 7em; }
-table.matrix span.step { display: inline-block; background: var(--accent-soft); padding: 2px 6px; border-radius: 3px; font-family: var(--f-mono); font-size: 0.8rem; }
-table.matrix span.gap { display: inline-block; color: var(--block); background: var(--block-bg); padding: 2px 6px; border-radius: 3px; font-size: 0.8rem; }
-.rel .relhead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+table.matrix td { white-space: normal; min-width: 7.5em; }
+table.matrix td:has(.stepv), table.matrix td:has(.gap) { background: var(--accent-soft); }
+table.matrix td:has(.gap) { background: var(--block-bg); }
+table.matrix .stepv, table.matrix span.v { font-family: var(--f-mono); font-size: 0.82rem; }
+table.matrix span.gap { color: var(--block); font-weight: 600; font-size: 0.8rem; }
+table.matrix small { color: var(--muted); }
 span.name { font-weight: 600; }
 """
 
@@ -235,8 +263,9 @@ def render_md(f: dict) -> str:
     if f.get("snapshot"):
         out += ["## Cluster snapshot", "", md_table(["Item"] + clusters, [[r.get("item")] + [(r.get("values") or {}).get(c, "") for c in clusters] for r in f["snapshot"]]), ""]
     if f.get("support"):
-        out += ["## Kubernetes support window", "", md_table(["Minor", "Released", "EOL", "Latest", "Status"],
-                [[r.get("minor"), r.get("released"), r.get("eol"), r.get("latest"), "EOL" if r.get("isEol") else "supported"] for r in f["support"]]), ""]
+        out += ["## Kubernetes support window", "", md_table(["Minor", "Released", "EOL", "Latest", "Status", "Release notes"],
+                [[r.get("minor"), r.get("released"), r.get("eol"), r.get("latest"), "EOL" if r.get("isEol") else "supported",
+                  f'[CHANGELOG-{r.get("minor")}]({changelog(r)})'] for r in f["support"]]), ""]
     if f.get("nodeLayer"):
         out += ["## Node layer", "", md_table(["Item", "Current", "Problem", "Action", "Needed by", "Sources"],
                 [[r.get("item"), r.get("current"), r.get("problem"), r.get("action"), f'{LABEL.get(r.get("severity"), "")} {r.get("neededBy") or ""}', refs_md(r.get("refs"))] for r in f["nodeLayer"]]), ""]
@@ -246,22 +275,23 @@ def render_md(f: dict) -> str:
                 [[r.get("name")] + [(r.get("current") or {}).get(c, "—") for c in clusters] + [(r.get("targets") or {}).get(p, "") for p in phases]
                  + [LABEL.get(r.get("severity"), ""), r.get("notes"), refs_md(r.get("refs"))] for r in f["components"]]), ""]
     matrix = f.get("matrix") or {}
-    if matrix.get("rows"):
-        hops = matrix.get("hops") or path
-        out += ["## Versions at each hop", "", "Do each step while the cluster is on the minor shown, before the next hop.", "",
-                md_table(["Component", "Now"] + [f"On {h}" for h in hops] + ["Final", "Rule", "Sources"],
-                         [[r.get("component") + (f' ({", ".join(r.get("clusters") or [])})' if r.get("clusters") else ""), r.get("current")]
-                          + [(r.get("steps") or {}).get(h, "") for h in hops] + [r.get("final") or r.get("status"), _rule(r.get("rule")), refs_md(r.get("refs"))]
-                          for r in matrix["rows"]]), ""]
-    if f.get("releaseNotes"):
-        out += ["## Release notes that affect these clusters", ""]
-        for r in f["releaseNotes"]:
-            out += [f'### {r.get("minor")} ([changelog]({r.get("src")}))', ""] + [f"- **{i}**" for i in r.get("hot") or []] + [f"- {i}" for i in r.get("items") or []] + [""]
-    if f.get("sequence"):
+    if matrix.get("rows") or f.get("sequence"):
         out += ["## Upgrade sequence", ""]
-        for n, s in enumerate(f["sequence"], 1):
-            out += [f'{n}. **{s.get("title")}**'] + [f"   - {i}" for i in s.get("items") or []]
-        out += [""]
+        if matrix.get("rows"):
+            hops = matrix.get("hops") or path
+            stages, last = hops[:-1], hops[-1]
+            head = [f"On {h} (before hop to {n})" if i == 0 else f"On {h}" for i, (h, n) in enumerate(zip(stages, hops[1:]))]
+            out += ["Read each row left to right: a step is finished while the cluster is on that minor, before the next hop.", "",
+                    md_table(["Component"] + head + [last, "Why, and upgrade-path rule"],
+                             [[r.get("component") + (f' ({", ".join(r.get("clusters") or [])})' if r.get("clusters") else "")]
+                              + [pipeline_md((r.get("cells") or {}).get(h), (r.get("steps") or {}).get(h)) for h in stages]
+                              + [str(r.get("final") or r.get("status")), f'{r.get("why") or _rule(r.get("rule"))} {refs_md(r.get("refs"))}']
+                              for r in matrix["rows"]]), ""]
+        if f.get("sequence"):
+            out += ["### Before and between hops", ""]
+            for n, s_ in enumerate(f["sequence"], 1):
+                out += [f'{n}. **{s_.get("title")}**'] + [f"   - {i}" for i in s_.get("items") or []]
+            out += [""]
     if f.get("verify"):
         out += ["## Still to verify", ""] + [f"- {v}" for v in f["verify"]] + [""]
     if f.get("references"):

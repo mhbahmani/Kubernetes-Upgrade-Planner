@@ -181,6 +181,9 @@ def plan_component(pid: str, current: str | None, spec: dict, path: list[str], e
         out["steps"].append(step_record(cur, target, via, k, reason))
         cur = target
     out["final"] = cur
+    visited = [key] + [v for st in out["steps"] for v in st["via"]]
+    out["ranges"] = {v: versions[v]["k8s"] for v in dict.fromkeys(visited)}
+    out["sources"] = list(dict.fromkeys(versions[v].get("source") for v in visited if versions[v].get("source")))
     newest = [kk for kk in keys if supports(rng(kk), path[-1], soft)]
     if newest and vt(newest[-1]) > vt(cur):
         out["newestForFinal"] = newest[-1]
@@ -217,20 +220,55 @@ def build_plan(start: str, targets: list[str], components: dict, compat: dict, e
     return plan
 
 
+def rule_text(rule) -> str:
+    if isinstance(rule, dict):
+        if "maxMinorStep" in rule:
+            return "one minor at a time" if rule["maxMinorStep"] == 1 else f'up to {rule["maxMinorStep"]} minors per step'
+        if "maxMajorStep" in rule:
+            return "within a major or to the next one"
+    return "no documented path rule; read every changelog"
+
+
+def why_text(res: dict) -> str:
+    """Plain summary of the ranges that force each step, plus the path rule."""
+    def fmt(rng):
+        lo, hi = rng
+        return f"{lo}+" if hi is None else (f"{lo} only" if lo == hi else f"{lo}–{hi}")
+    parts = [f"{v} supports {fmt(r)}" for v, r in (res.get("ranges") or {}).items()]
+    text = "; ".join(parts)
+    if res.get("gaps"):
+        text += f'. Nothing known supports {res["gaps"][0]["next"]}'
+    return (text + f'. Path rule: {rule_text(res.get("rule"))}.').lstrip(". ")
+
+
 def matrix(plan: dict) -> dict:
-    """One row per component; clusters with identical plans share a row."""
+    """One row per component; clusters with identical plans share a row.
+
+    `cells` holds one entry per stage the cluster passes through before its
+    last hop: {"from", "via", "to", "first"} for a step or {"gap"} for a hop
+    nothing supports. `final` is the version on the last minor.
+    """
     rows: dict[str, dict] = {}
     for cluster, comps in sorted(plan["clusters"].items()):
         for pid, res in comps.items():
-            steps = {s["at"]: " → ".join([s["from"]] + s["via"]) for s in res["steps"]}
+            cells: dict[str, dict] = {}
+            for n, st in enumerate(res["steps"]):
+                cells[st["at"]] = {"from": st["from"], "via": st["via"][:-1], "to": st["to"], "first": n == 0,
+                                   "earliest": st["earliest"]}
             for gap in res["gaps"]:
-                steps[gap["at"]] = "GAP: " + gap["text"]
+                cells[gap["at"]] = {"gap": gap["text"]}
+            steps = {k: (f'GAP: {c["gap"]}' if "gap" in c else " → ".join([c["from"]] + c["via"] + [c["to"]]))
+                     for k, c in cells.items()}
             sig = json.dumps([pid, res.get("current"), steps, res.get("status")], sort_keys=True)
-            row = rows.setdefault(sig, {"component": pid, "clusters": [], "current": res.get("current"),
-                                        "status": res.get("status"), "steps": steps, "final": res.get("final"),
-                                        "newestForFinal": res.get("newestForFinal"), "rule": res.get("rule"),
-                                        "refs": [{"title": f"{pid} compatibility", "url": res.get("matrix")}]
-                                        if res.get("matrix") else []})
+            final = res.get("final")
+            if res.get("status") == "blocked":
+                final = f'{final} (blocked before {res["gaps"][0]["next"]})'
+            row = rows.setdefault(sig, {
+                "component": pid, "clusters": [], "current": res.get("current"), "status": res.get("status"),
+                "cells": cells, "steps": steps, "final": final, "newestForFinal": res.get("newestForFinal"),
+                "rule": res.get("rule"), "why": why_text(res) if res.get("ranges") else None,
+                "refs": ([{"title": f"{pid} compatibility", "url": res["matrix"]}] if res.get("matrix") else [])
+                        + [{"title": "source", "url": u} for u in res.get("sources", []) if u != res.get("matrix")]})
             row["clusters"].append(cluster)
     return {"hops": plan["path"], "rows": sorted(rows.values(), key=lambda r: (r["component"], r["clusters"]))}
 

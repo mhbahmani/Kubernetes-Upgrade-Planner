@@ -29,11 +29,12 @@ def test_render_both_formats(tmp_path):
     md = rr.render_md(EXAMPLE)
     page = rr.render_html(EXAMPLE)
     frag = rr.render_html(EXAMPLE, fragment=True)
-    for heading in ("## Summary", "## Versions at each hop", "## Components", "## Node layer"):
+    for heading in ("## Summary", "## Upgrade sequence", "## Components", "## Node layer", "## Kubernetes support window"):
         assert heading in md
     assert page.startswith("<!doctype html>") and "</html>" in page
     assert "<html" not in frag and frag.startswith("<title>")
-    assert 'id="path"' in page and 'class="tbl"' in page
+    assert 'id="sequence"' in page and 'class="tbl"' in page and "CHANGELOG-1.33" in page
+    assert "Release notes that affect" not in page and "<b>1.19</b>" in page
     for row in EXAMPLE["matrix"]["rows"]:
         assert row["component"] in page and row["component"] in md
 

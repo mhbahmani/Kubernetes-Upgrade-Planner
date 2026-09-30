@@ -105,3 +105,14 @@ def test_validate(compat):
     errors = " | ".join(ph.validate(bad, compat))
     for expected in ("skips a minor", "meta.date", "no refs", "1.21 supports", "marked ok"):
         assert expected in errors
+
+
+def test_matrix_cells_and_why(compat):
+    comps = {pid: {"c1": {"version": v}} for pid, v in CURRENT.items()}
+    p = ph.build_plan("1.31", ["1.33", "1.36"], comps, compat, EOL, "eager")
+    row = next(r for r in p["matrix"]["rows"] if r["component"] == "cert-manager")
+    assert row["cells"]["1.31"] == {"from": "1.17", "via": ["1.18"], "to": "1.19", "first": True, "earliest": "1.31"}
+    assert row["cells"]["1.33"]["first"] is False
+    assert "1.19 supports 1.31–1.35" in row["why"] and "one minor at a time" in row["why"]
+    ing = next(r for r in p["matrix"]["rows"] if r["component"] == "ingress-nginx")
+    assert "gap" in ing["cells"]["1.35"] and "blocked before 1.36" in ing["final"]

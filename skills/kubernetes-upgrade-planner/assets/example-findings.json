@@ -145,42 +145,48 @@
    "released": "2024-08-13",
    "eol": "2025-11-11",
    "latest": "1.31.14",
-   "isEol": true
+   "isEol": true,
+   "changelog": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.31.md"
   },
   {
    "minor": "1.32",
    "released": "2024-12-11",
    "eol": "2026-02-28",
    "latest": "1.32.13",
-   "isEol": true
+   "isEol": true,
+   "changelog": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.32.md"
   },
   {
    "minor": "1.33",
    "released": "2025-04-23",
    "eol": "2026-06-28",
    "latest": "1.33.13",
-   "isEol": true
+   "isEol": true,
+   "changelog": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.33.md"
   },
   {
    "minor": "1.34",
    "released": "2025-08-27",
    "eol": "2026-10-27",
    "latest": "1.34.12",
-   "isEol": false
+   "isEol": false,
+   "changelog": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.34.md"
   },
   {
    "minor": "1.35",
    "released": "2025-12-17",
    "eol": "2027-02-28",
    "latest": "1.35.9",
-   "isEol": false
+   "isEol": false,
+   "changelog": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md"
   },
   {
    "minor": "1.36",
    "released": "2026-04-22",
    "eol": "2027-06-28",
    "latest": "1.36.5",
-   "isEol": false
+   "isEol": false,
+   "changelog": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.36.md"
   }
  ],
  "nodeLayer": [
@@ -381,6 +387,24 @@
     ],
     "current": "3.29.1",
     "status": "upgrade",
+    "cells": {
+     "1.31": {
+      "from": "3.29",
+      "via": [],
+      "to": "3.30",
+      "first": true,
+      "earliest": "1.31"
+     },
+     "1.34": {
+      "from": "3.30",
+      "via": [
+       "3.31"
+      ],
+      "to": "3.32",
+      "first": false,
+      "earliest": "1.34"
+     }
+    },
     "steps": {
      "1.31": "3.29 \u2192 3.30",
      "1.34": "3.30 \u2192 3.31 \u2192 3.32"
@@ -390,10 +414,23 @@
     "rule": {
      "maxMinorStep": 1
     },
+    "why": "3.29 supports 1.29\u20131.32; 3.30 supports 1.31\u20131.35; 3.31 supports 1.32\u20131.35; 3.32 supports 1.34\u20131.36. Path rule: one minor at a time.",
     "refs": [
      {
       "title": "calico compatibility",
       "url": "https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements"
+     },
+     {
+      "title": "source",
+      "url": "https://docs.tigera.io/calico/3.29/getting-started/kubernetes/requirements"
+     },
+     {
+      "title": "source",
+      "url": "https://docs.tigera.io/calico/3.30/getting-started/kubernetes/requirements"
+     },
+     {
+      "title": "source",
+      "url": "https://docs.tigera.io/calico/3.31/getting-started/kubernetes/requirements"
      }
     ],
     "id": "calico"
@@ -406,6 +443,26 @@
     ],
     "current": "1.17.4",
     "status": "upgrade",
+    "cells": {
+     "1.31": {
+      "from": "1.17",
+      "via": [
+       "1.18"
+      ],
+      "to": "1.19",
+      "first": true,
+      "earliest": "1.31"
+     },
+     "1.33": {
+      "from": "1.19",
+      "via": [
+       "1.20"
+      ],
+      "to": "1.21",
+      "first": false,
+      "earliest": "1.33"
+     }
+    },
     "steps": {
      "1.31": "1.17 \u2192 1.18 \u2192 1.19",
      "1.33": "1.19 \u2192 1.20 \u2192 1.21"
@@ -415,6 +472,7 @@
     "rule": {
      "maxMinorStep": 1
     },
+    "why": "1.17 supports 1.29\u20131.33; 1.18 supports 1.29\u20131.33; 1.19 supports 1.31\u20131.35; 1.20 supports 1.32\u20131.35; 1.21 supports 1.33\u20131.36. Path rule: one minor at a time.",
     "refs": [
      {
       "title": "cert-manager compatibility",
@@ -431,13 +489,26 @@
     ],
     "current": "1.12.1",
     "status": "blocked",
+    "cells": {
+     "1.31": {
+      "from": "1.12",
+      "via": [],
+      "to": "1.15",
+      "first": true,
+      "earliest": "1.31"
+     },
+     "1.35": {
+      "gap": "no known ingress-nginx version supports both 1.35 and 1.36"
+     }
+    },
     "steps": {
      "1.31": "1.12 \u2192 1.15",
      "1.35": "GAP: no known ingress-nginx version supports both 1.35 and 1.36"
     },
-    "final": "1.15",
+    "final": "1.15 (blocked before 1.36)",
     "newestForFinal": null,
     "rule": "any",
+    "why": "1.12 supports 1.28\u20131.32; 1.15 supports 1.31\u20131.35. Nothing known supports 1.36. Path rule: no documented path rule; read every changelog.",
     "refs": [
      {
       "title": "ingress-nginx compatibility",
@@ -454,6 +525,24 @@
     ],
     "current": "1.27.3",
     "status": "upgrade",
+    "cells": {
+     "1.31": {
+      "from": "1.27",
+      "via": [
+       "1.28"
+      ],
+      "to": "1.29",
+      "first": true,
+      "earliest": "1.31"
+     },
+     "1.32": {
+      "from": "1.29",
+      "via": [],
+      "to": "1.30",
+      "first": false,
+      "earliest": "1.32"
+     }
+    },
     "steps": {
      "1.31": "1.27 \u2192 1.28 \u2192 1.29",
      "1.32": "1.29 \u2192 1.30"
@@ -463,6 +552,7 @@
     "rule": {
      "maxMinorStep": 1
     },
+    "why": "1.27 supports 1.29\u20131.33; 1.28 supports 1.30\u20131.34; 1.29 supports 1.31\u20131.35; 1.30 supports 1.32\u20131.36. Path rule: one minor at a time.",
     "refs": [
      {
       "title": "istio compatibility",
@@ -479,16 +569,39 @@
     ],
     "current": "1.11.0",
     "status": "blocked",
+    "cells": {
+     "1.31": {
+      "from": "1.11",
+      "via": [
+       "1.13",
+       "1.15"
+      ],
+      "to": "1.17",
+      "first": true,
+      "earliest": "1.31"
+     },
+     "1.33": {
+      "from": "1.17",
+      "via": [],
+      "to": "1.18",
+      "first": false,
+      "earliest": "1.33"
+     },
+     "1.35": {
+      "gap": "no known velero version supports both 1.35 and 1.36"
+     }
+    },
     "steps": {
      "1.31": "1.11 \u2192 1.13 \u2192 1.15 \u2192 1.17",
      "1.33": "1.17 \u2192 1.18",
      "1.35": "GAP: no known velero version supports both 1.35 and 1.36"
     },
-    "final": "1.18",
+    "final": "1.18 (blocked before 1.36)",
     "newestForFinal": null,
     "rule": {
      "maxMinorStep": 2
     },
+    "why": "1.11 supports 1.23\u20131.27; 1.13 supports 1.26\u20131.28; 1.15 supports 1.28\u20131.31; 1.17 supports 1.31\u20131.34; 1.18 supports 1.33\u20131.35. Nothing known supports 1.36. Path rule: up to 2 minors per step.",
     "refs": [
      {
       "title": "velero compatibility",
@@ -499,69 +612,13 @@
    }
   ]
  },
- "releaseNotes": [
-  {
-   "minor": "1.35",
-   "src": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md",
-   "hot": [
-    "kubelet refuses cgroup v1 by default (failCgroupV1: true)",
-    "kube-proxy IPVS mode deprecated"
-   ],
-   "items": [
-    "kubelet --pod-infra-container-image removed"
-   ]
-  }
- ],
  "sequence": [
   {
-   "title": "On 1.31, before the hop to 1.32",
+   "title": "Prepare, on 1.31",
    "items": [
-    "calico (cluster-a): 3.29 \u2192 3.30 (possible from 1.31)",
-    "calico (cluster-b): 3.29 \u2192 3.30 (possible from 1.31)",
-    "cert-manager (cluster-a): 1.17 \u2192 1.18 \u2192 1.19 (possible from 1.31)",
-    "cert-manager (cluster-b): 1.17 \u2192 1.18 \u2192 1.19 (possible from 1.31)",
-    "external-secrets (cluster-a): 0.18 \u2192 1.3 \u2192 2.8 (possible from 1.31)",
-    "external-secrets (cluster-b): 0.18 \u2192 1.3 \u2192 2.8 (possible from 1.31)",
-    "gpu-operator (cluster-a): 25.3 \u2192 25.10 (possible from 1.31)",
-    "gpu-operator (cluster-b): 25.3 \u2192 25.10 (possible from 1.31)",
-    "ingress-nginx (cluster-a): 1.12 \u2192 1.15 (possible from 1.31)",
-    "ingress-nginx (cluster-b): 1.12 \u2192 1.15 (possible from 1.31)",
-    "istio (cluster-a): 1.27 \u2192 1.28 \u2192 1.29 (possible from 1.31)",
-    "istio (cluster-b): 1.27 \u2192 1.28 \u2192 1.29 (possible from 1.31)",
-    "kube-state-metrics (cluster-a): 2.16 \u2192 2.20 (possible from 1.31)",
-    "kube-state-metrics (cluster-b): 2.16 \u2192 2.20 (possible from 1.31)",
-    "kyverno (cluster-a): 1.15 \u2192 1.16 (possible from 1.31)",
-    "kyverno (cluster-b): 1.15 \u2192 1.16 (possible from 1.31)",
-    "topolvm (cluster-a): 0.36 \u2192 0.38 \u2192 0.39 \u2192 0.41 (possible from 1.31)",
-    "velero (cluster-a): 1.11 \u2192 1.13 \u2192 1.15 \u2192 1.17 (possible from 1.31)",
-    "velero (cluster-b): 1.11 \u2192 1.13 \u2192 1.15 \u2192 1.17 (possible from 1.31)",
-    "Hop: upgrade the control plane and nodes to 1.32"
-   ]
-  },
-  {
-   "title": "On 1.32, before the hop to 1.33",
-   "items": [
-    "gpu-operator (cluster-a): 25.10 \u2192 26.3 (possible from 1.32)",
-    "gpu-operator (cluster-b): 25.10 \u2192 26.3 (possible from 1.32)",
-    "istio (cluster-a): 1.29 \u2192 1.30 (possible from 1.32)",
-    "istio (cluster-b): 1.29 \u2192 1.30 (possible from 1.32)",
-    "kyverno (cluster-a): 1.16 \u2192 1.17 \u2192 1.18 (possible from 1.32)",
-    "kyverno (cluster-b): 1.16 \u2192 1.17 \u2192 1.18 (possible from 1.32)",
-    "Hop: upgrade the control plane and nodes to 1.33"
-   ]
-  },
-  {
-   "title": "On 1.33, before the hop to 1.34",
-   "items": [
-    "argocd (cluster-a): 3.4 \u2192 3.5 (possible from 1.33)",
-    "argocd (cluster-b): 3.4 \u2192 3.5 (possible from 1.33)",
-    "cert-manager (cluster-a): 1.19 \u2192 1.20 \u2192 1.21 (possible from 1.33)",
-    "cert-manager (cluster-b): 1.19 \u2192 1.20 \u2192 1.21 (possible from 1.33)",
-    "gpu-operator (cluster-a): 26.3 \u2192 26.7 (possible from 1.33)",
-    "gpu-operator (cluster-b): 26.3 \u2192 26.7 (possible from 1.33)",
-    "velero (cluster-a): 1.17 \u2192 1.18 (possible from 1.33)",
-    "velero (cluster-b): 1.17 \u2192 1.18 (possible from 1.33)",
-    "Hop: upgrade the control plane and nodes to 1.34"
+    "Snapshot etcd and back up /etc/kubernetes",
+    "Hold the containerd package on every node",
+    "Check cgroup v2 on every node (node_facts.sh)"
    ]
   }
  ],

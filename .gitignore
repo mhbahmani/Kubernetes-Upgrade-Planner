@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+# collected cluster data and generated reports never belong in git
+k8s-upgrade-plan/
+upgrade-data-*/
+.cache/

@@ -1,0 +1,14 @@
+{
+  "name": "kubernetes-upgrade-planner",
+  "description": "Agent skill for planning self-managed Kubernetes upgrades.",
+  "owner": {
+    "name": "MohammadHosein Bahmani"
+  },
+  "plugins": [
+    {
+      "name": "kubernetes-upgrade-planner",
+      "source": "./",
+      "description": "Plan multi-hop Kubernetes upgrades with bridge versions per component."
+    }
+  ]
+}

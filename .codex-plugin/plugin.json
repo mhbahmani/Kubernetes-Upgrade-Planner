@@ -1,0 +1,14 @@
+{
+  "name": "kubernetes-upgrade-planner",
+  "version": "0.1.0",
+  "description": "Plan multi-hop upgrades of self-managed Kubernetes clusters (kubeadm, Kubespray) and compute bridge versions for every component. Read-only.",
+  "author": {"name": "MohammadHosein Bahmani"},
+  "license": "MIT",
+  "keywords": ["kubernetes", "upgrade", "kubeadm", "kubespray", "compatibility", "eol"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Kubernetes upgrade planner",
+    "shortDescription": "Plan multi-hop Kubernetes upgrades",
+    "category": "Developer Tools"
+  }
+}

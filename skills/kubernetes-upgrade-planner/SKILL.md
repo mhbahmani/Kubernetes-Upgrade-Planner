@@ -126,8 +126,10 @@ For each minor you pass through, read the "Urgent Upgrade Notes" and
 "Deprecation" sections of
 `https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.X.md`
 and match them against what you collected (cgroup v1, containerd 1.x, IPVS,
-removed APIs, kubelet flags, pause and etcd versions). Don't list generic notes
-that don't touch the clusters.
+removed APIs, kubelet flags, pause and etcd versions). Each match becomes a
+node-layer or summary row with the changelog as its source; the report has no
+separate release-notes section (the support window links every changelog).
+Don't list generic notes that don't touch the clusters.
 
 ### 6-7. Compatibility and hop plan
 
@@ -163,7 +165,9 @@ The draft fills in the version data mechanically; the format is in
 `assets/example-findings.json`. Then do the part only you can do:
 - rewrite the summary, and add findings from the references (for example a
   kubelet config that gets overwritten, provider addons, Vault auth)
-- fill `releaseNotes` with only the changelog items that match what you collected
+- turn changelog items that match what you collected into node-layer rows
+- add preparation steps (backups, holds, fixes) to `sequence`; the per-component
+  steps are already in the upgrade-sequence table
 - remove rows that don't apply (for example a PSP template that is disabled)
 
 Then run:

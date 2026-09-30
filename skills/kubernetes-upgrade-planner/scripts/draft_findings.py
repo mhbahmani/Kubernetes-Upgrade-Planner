@@ -5,10 +5,12 @@
                       [--install CLUSTER=install.json ...] [--nodes CLUSTER=nodefacts.json ...]
                       [--apis apis.json] [--compat compat.json] [--title TEXT] [-o findings.json]
 
-The draft fills the version data mechanically: support window, snapshot,
-components, hop matrix, sequence, and what to verify. Summary cards and
+The draft fills the version data mechanically: support window (with
+changelog links), snapshot, components, the upgrade-sequence table, and what
+to verify. Summary cards and
 node-layer rows come from simple rules. Review every row, rewrite the text in
-your own words, and add the release notes that match these clusters. Then run
+your own words, turn changelog items that match these clusters into rows, and
+add preparation steps to "sequence". Then run
 plan_hops.py --validate.
 """
 from __future__ import annotations
@@ -73,7 +75,8 @@ def main() -> None:
     # --- support window
     rel = {r["name"]: r for r in (eol.get("kubernetes") or {}).get("releases", [])}
     support = [{"minor": m, "released": rel.get(m, {}).get("releaseDate"), "eol": rel.get(m, {}).get("eolFrom"),
-                "latest": rel.get(m, {}).get("latest"), "isEol": rel.get(m, {}).get("isEol")} for m in path]
+                "latest": rel.get(m, {}).get("latest"), "isEol": rel.get(m, {}).get("isEol"),
+                "changelog": CHANGELOG.format(m)} for m in path]
 
     # --- snapshot
     def row(item: str, fn) -> dict:
@@ -206,30 +209,17 @@ def main() -> None:
                                "text": f"Support ended {stop['eolFrom']}. Treat it as a stop along the way, not a destination."})
 
     matrix = {"hops": plan["matrix"]["hops"],
-              "rows": [dict(r, id=r["component"]) for r in plan["matrix"]["rows"] if r["steps"] or r["status"] != "ok"]}
+              "rows": [dict(r, id=r["component"]) for r in plan["matrix"]["rows"] if r.get("cells")]}
 
-    # --- sequence from plan steps
-    sequence = []
-    for m in path:
-        items = []
-        for pid in sorted({p for c in plan["clusters"].values() for p in c}):
-            for c in clusters:
-                for s in (plan["clusters"][c].get(pid) or {}).get("steps", []):
-                    if s["at"] == m:
-                        items.append(f'{pid} ({c}): {" → ".join([s["from"]] + s["via"])} (possible from {s["earliest"]})')
-        nxt = path[path.index(m) + 1] if m != final else None
-        title = f"On {m}, before the hop to {nxt}" if nxt else f"On {m} (final)"
-        sequence.append({"title": title, "items": sorted(set(items)) + ([f"Hop: upgrade the control plane and nodes to {nxt}"] if nxt else [])})
-
-    release_notes = [{"minor": m, "src": CHANGELOG.format(m), "hot": [], "items": []} for m in path[1:]]
-    verify.append("Release notes: fill releaseNotes with only the changelog items that match what was collected.")
+    verify.append("Release notes: read the urgent upgrade notes of every minor (links in the support window) "
+                  "and add each item that matches the collected data as a node-layer or summary row.")
 
     findings = {
         "meta": {"title": args.title, "date": datetime.date.today().isoformat(), "clusters": clusters,
                  "path": path, "phases": phases,
                  "facts": [f'{c} {installs[c].get("serverVersion")} ({installs[c]["installer"]["type"]})' for c in clusters if c in installs]},
         "summary": summary, "snapshot": snapshot, "support": support, "nodeLayer": node_layer,
-        "components": components, "matrix": matrix, "releaseNotes": release_notes, "sequence": sequence,
+        "components": components, "matrix": matrix, "sequence": [],
         "verify": list(dict.fromkeys(verify)),
         "references": [{"group": "Kubernetes", "items": K8S_REFS + [CONTAINERD, CGROUPS]},
                        {"group": "Components", "items": [r for c in components for r in c["refs"]]}],

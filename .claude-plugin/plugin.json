@@ -2,7 +2,19 @@
   "name": "kubernetes-upgrade-planner",
   "version": "0.1.0",
   "description": "Plan multi-hop upgrades of self-managed Kubernetes clusters with bridge versions per component, from read-only data.",
-  "author": {"name": "MohammadHosein Bahmani"},
+  "author": {
+    "name": "MohammadHosein Bahmani"
+  },
+  "homepage": "https://github.com/mhbahmani/Kubernetes-Upgrade-Planner",
+  "repository": "https://github.com/mhbahmani/Kubernetes-Upgrade-Planner",
   "license": "MIT",
-  "keywords": ["kubernetes", "upgrade", "kubeadm", "kubespray", "argocd", "helm", "istio"]
+  "keywords": [
+    "kubernetes",
+    "upgrade",
+    "kubeadm",
+    "kubespray",
+    "argocd",
+    "helm",
+    "istio"
+  ]
 }

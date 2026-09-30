@@ -30,8 +30,8 @@ Pick one.
 **Script, from a clone** (supports every agent, global or per project):
 
 ```bash
-git clone https://github.com/OWNER/kubernetes-upgrade-planner.git
-cd kubernetes-upgrade-planner
+git clone https://github.com/mhbahmani/Kubernetes-Upgrade-Planner.git
+cd Kubernetes-Upgrade-Planner
 ./install.sh                              # global, for every agent found on PATH
 ./install.sh --agent claude               # one agent: claude | codex | opencode | all
 ./install.sh --project ~/src/my-infra     # project-local instead of global
@@ -43,32 +43,32 @@ cd kubernetes-upgrade-planner
 **Script, without a clone:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OWNER/kubernetes-upgrade-planner/main/install.sh \
-  | REPO=OWNER/kubernetes-upgrade-planner bash -s -- --agent all
+curl -fsSL https://raw.githubusercontent.com/mhbahmani/Kubernetes-Upgrade-Planner/master/install.sh \
+  | bash -s -- --agent all
 ```
 
 **[skills CLI](https://github.com/vercel-labs/skills):**
 
 ```bash
-npx skills add OWNER/kubernetes-upgrade-planner -a claude-code -a codex -a opencode      # project
-npx skills add OWNER/kubernetes-upgrade-planner -g -a claude-code -a codex -a opencode   # global
+npx skills add mhbahmani/Kubernetes-Upgrade-Planner -a claude-code -a codex -a opencode      # project
+npx skills add mhbahmani/Kubernetes-Upgrade-Planner -g -a claude-code -a codex -a opencode   # global
 ```
 
 **Claude Code plugin marketplace:**
 
 ```
-/plugin marketplace add OWNER/kubernetes-upgrade-planner
+/plugin marketplace add mhbahmani/Kubernetes-Upgrade-Planner
 /plugin install kubernetes-upgrade-planner@kubernetes-upgrade-planner
 ```
 
 **Codex plugin marketplace:**
 
 ```bash
-codex plugin marketplace add OWNER/kubernetes-upgrade-planner
+codex plugin marketplace add mhbahmani/Kubernetes-Upgrade-Planner
 codex plugin install kubernetes-upgrade-planner
 ```
 
-Replace `OWNER` with the GitHub account that hosts the repo. The script puts the skill in:
+The script puts the skill in:
 
 | Agent | Global | Project |
 |---|---|---|

@@ -9,7 +9,7 @@
 #   ./install.sh --dry-run               print what would happen
 #
 # Without a clone (downloads the repo archive from GitHub):
-#   curl -fsSL https://raw.githubusercontent.com/OWNER/kubernetes-upgrade-planner/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/mhbahmani/Kubernetes-Upgrade-Planner/master/install.sh | bash
 #   curl -fsSL .../install.sh | bash -s -- --agent codex --project .
 # Set REPO=owner/name and REF=branch-or-tag to install from a fork or a release.
 #
@@ -23,8 +23,8 @@
 set -euo pipefail
 
 SKILL_NAME="kubernetes-upgrade-planner"
-REPO="${REPO:-OWNER/kubernetes-upgrade-planner}"
-REF="${REF:-main}"
+REPO="${REPO:-mhbahmani/Kubernetes-Upgrade-Planner}"
+REF="${REF:-master}"
 
 AGENTS=() PROJECT_DIR="" LINK="" REMOVE=0 DRY=0
 while [[ $# -gt 0 ]]; do

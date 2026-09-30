@@ -54,6 +54,7 @@ def test_remove(tmp_path):
 
 def test_piped_install_requires_repo(tmp_path):
     env = dict(os.environ, HOME=str(tmp_path), PATH="/usr/bin:/bin")
+    env["REPO"] = "OWNER/fork"  # the placeholder must be refused, never fetched
     script = (ROOT / "install.sh").read_text()
     proc = subprocess.run(["bash", "-s", "--", "--agent", "claude"], input=script, env=env,
                           capture_output=True, text=True, cwd=tmp_path)

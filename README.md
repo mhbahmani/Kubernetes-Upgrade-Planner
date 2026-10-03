@@ -46,13 +46,34 @@ The report has these sections:
 - **Components**: current and target versions
 - **Upgrade sequence**: a per-hop table showing the version each component must reach before each hop
 
-Here is part of an upgrade sequence table:
+## Example: a two-phase upgrade
 
-| Component | On 1.31 | On 1.32 | On 1.33 | … | 1.36 |
-|---|---|---|---|---|---|
-| cert-manager | 1.17 → 1.18 → **1.19** | | → 1.20 → **1.21** | | 1.21 |
-| calico | 3.29 → **3.30** | | | → 3.31 → **3.32** | 3.32 |
-| ingress-nginx | 1.12 → **1.15** | | | ⛔ nothing supports 1.36 | blocked |
+These screenshots come from a real run on two self-managed production
+clusters: one installed with kubeadm, the other with Kubespray. The cluster
+names are anonymized. The first phase goes from 1.31 to 1.33, and the second from 1.33 to
+1.36.
+
+**The summary.** The upgrade path shows each hop, which phase it belongs to and
+when that minor goes end of life. Under it, the blockers come first: 1.33 is
+already end of life, nodes still run containerd 1.x, and four components have
+no release that supports 1.36.
+
+![Report header with the hop path and the blockers](docs/statics/upgrade-assessment.png)
+
+**The support window.** Each minor on the path has its release date, end-of-life
+date, latest patch and changelog. Red rows are past end of life, so you can see
+that the first phase ends on a release that is no longer supported.
+
+![Kubernetes support window with end-of-life rows in red](docs/statics/kubernetes-support-window.png)
+
+**The upgrade sequence.** Read each row left to right. A shaded cell is a step
+to finish while the cluster is on that minor, before the next hop, and the bold
+version is where that step ends. For example, cert-manager moves 1.17 → 1.18 →
+1.19 on 1.31, because 1.20 needs 1.32 or newer. It then goes to 1.21 on 1.33.
+A red cell means no known version supports the next hop. The last column says
+why, with links to each project's compatibility table.
+
+![Upgrade sequence table with bridge versions per hop](docs/statics/update-sequence.png)
 
 ## More
 
